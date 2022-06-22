@@ -1,5 +1,5 @@
 import "./App.css";
-// import UilReact from "@iconscout/react-unicons/icons/uil-react";
+
 import TopButtons from "./components/TopButtons";
 import Inputs from "./components/Inputs";
 import TimeAndLocation from "./components/TimeAndLocation";
@@ -7,15 +7,40 @@ import TemperatureAndDetails from "./components/TemperatureAndDetails";
 import Forecast from "./components/Forecast";
 import getFormattedWeatherData from "./services/weatherService";
 import { useState, useEffect } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   const [query, setQuery] = useState({ q: "london" });
   const [units, setUnits] = useState("metric");
   const [weather, setWeather] = useState(null);
 
+  const capitalizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
   useEffect(() => {
     const fetchWeather = async () => {
+      const message = query.q
+        ? capitalizeFirstLetter(query.q)
+        : "current location.";
+      toast.info("Fetching weather for " + message, {
+        position: "top-left",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        draggable: true,
+        progress: undefined,
+      });
       const data = await getFormattedWeatherData({ ...query, units });
+      toast.success("Successfully fetched weather for " + message, {
+        position: "top-left",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        draggable: true,
+        progress: undefined,
+      });
       setWeather(data);
     };
     fetchWeather();
@@ -43,6 +68,8 @@ function App() {
           <Forecast title="Daily Forecast" items={weather.daily} />
         </>
       )}
+
+      <ToastContainer closeOnClick rtl={false} draggable theme="colored" />
     </div>
   );
 }
